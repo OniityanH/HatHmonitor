@@ -1,6 +1,7 @@
 import config
 from robobrowser import RoboBrowser
 import re
+import time
 
 br = RoboBrowser()
 br.open(r"https://e-hentai.org/bounce_login.php")
@@ -9,6 +10,7 @@ form ['UserName'] = config.DATACOUP_NAME
 form ['PassWord'] = config.DATACOUP_PASS
 br.submit_form(form)
 br.open("https://e-hentai.org/hentaiathome.php")
+time.sleep(10)
 src = str(br.parsed()) #store all the htmlpage into src
 
 #get status
@@ -18,23 +20,10 @@ Status = re.search('%s(.*)%s' % (StatusStart, StatusEnd), src).group(1)
 print(Status)
 
 #get last seen time
-LastSeenStart = '</td>\n<td>2016-10-16</td>\n<td>'
+LastSeenStart = '</td>\n<td>' + config.DATACOUP_CREATED + '</td>\n<td>'
 LastSeenEnd = '</td>'
 LastSeen = re.search('%s(.*)%s' % (LastSeenStart, LastSeenEnd), src).group(1)
 print(LastSeen)
-
-#get file served number
-FilesServedStart = '</td>\n<td>'
-FilesServedEnd = '</td>\n<td style="text-align:left; padding-left:7px">'
-FilesServed = re.search(LastSeen + '%s(.*)%s' % (FilesServedStart, FilesServedEnd), src).group(1)
-print(FilesServed)
-for element in FilesServed:
-    if FilesServed[element] is ',':
-        print('this is a ,')
-    else:
-        FilesServedstr = FilesServedstr + FilesServed[element]
-print(FilesServedstr)
-print(int(FilesServedstr))
 
 #get ip
 ClientIPStart = '</td>\n<td style="text-align:left; padding-left:7px">'
@@ -44,7 +33,7 @@ print(ClientIP)
 
 #get maxspeed
 Max_SpeedStart = '</td>\n<td>1.4.2 Stable</td>\n<td>'
-Max_SpeedEnd = '</td>\n<td style="color:green">'
+Max_SpeedEnd = ' KB/s</td>\n<td style="color:green">'
 Max_Speed = re.search('%s(.*)%s' % (Max_SpeedStart, Max_SpeedEnd), src).group(1)
 print(int(Max_Speed))
 
@@ -59,6 +48,24 @@ QualityStart = Trust + '</td>\n<td>'
 QualityEnd = '</td>'
 Quality = re.search('%s(.*)%s' % (QualityStart, QualityEnd), src).group(1)
 print(int(Quality))
+
+#get file served number
+FilesServedStart = '</td>\n<td>'
+FilesServedEnd = '</td>\n<td style="text-align:left; padding-left:7px">'
+FilesServed = re.search(LastSeen + '%s(.*)%s' % (FilesServedStart, FilesServedEnd), src).group(1)
+print(int(FilesServed.replace(',', '')))
+
+#get Hitrate
+HitrateStart = Quality + '</td>\n<td>'
+HitrateEnd = ' / day</td>\n<td>'
+Hitrate = re.search('%s(.*)%s' % (HitrateStart, HitrateEnd), src).group(1)
+print(float(Hitrate))
+
+#get Hathrate
+HathrateStart = ' / min</td>\n<td>'
+HathrateEnd = ' / min</td>\n<td>'
+Hathrate = re.search('%s(.*)%s' % (HathrateStart, HathrateEnd), src).group(1)
+print(float(Hathrate))
 
 
 
