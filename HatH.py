@@ -2,6 +2,7 @@ import config
 from robobrowser import RoboBrowser
 import re
 import time
+import csv
 
 br = RoboBrowser()
 br.open(r"https://e-hentai.org/bounce_login.php")
@@ -17,55 +18,70 @@ src = str(br.parsed()) #store all the htmlpage into src
 StatusStart = '<td style="font-weight:bold; color:green">'
 StatusEnd = '</td>'
 Status = re.search('%s(.*)%s' % (StatusStart, StatusEnd), src).group(1)
-print(Status)
+print('Status:\t'+Status)
 
 #get last seen time
 LastSeenStart = '</td>\n<td>' + config.DATACOUP_CREATED + '</td>\n<td>'
 LastSeenEnd = '</td>'
 LastSeen = re.search('%s(.*)%s' % (LastSeenStart, LastSeenEnd), src).group(1)
-print(LastSeen)
+print('LastSeen:\t'+LastSeen)
+
+#get file served number
+FilesServedStart = '</td>\n<td>'
+FilesServedEnd = '</td>\n<td style="text-align:left; padding-left:7px">'
+FilesServed = re.search(LastSeen + '%s(.*)%s' % (FilesServedStart, FilesServedEnd), src).group(1)
+print('FileServed:\t')
+print(int(FilesServed.replace(',', '')) )
+
 
 #get ip
 ClientIPStart = '</td>\n<td style="text-align:left; padding-left:7px">'
 ClientIPEnd = '</td>'
 ClientIP = re.search('%s(.*)%s' % (ClientIPStart, ClientIPEnd), src).group(1)
-print(ClientIP)
+print('ClientIP:\t')
+print( ClientIP)
 
 #get maxspeed
 Max_SpeedStart = '</td>\n<td>1.4.2 Stable</td>\n<td>'
 Max_SpeedEnd = ' KB/s</td>\n<td style="color:green">'
 Max_Speed = re.search('%s(.*)%s' % (Max_SpeedStart, Max_SpeedEnd), src).group(1)
+print('Max_Speed:\t')
 print(int(Max_Speed))
 
 #get trust
 TrustStart = 'KB/s</td>\n<td style="color:green">'
 TrustEnd = '</td>'
 Trust = re.search('%s(.*)%s' % (TrustStart, TrustEnd), src).group(1)
+print('Trust:\t')
 print(Trust)
 
 #get Quality
-QualityStart = Trust + '</td>\n<td>'
+QualityStart = '</td>\n<td>'
 QualityEnd = '</td>'
 Quality = re.search('%s(.*)%s' % (QualityStart, QualityEnd), src).group(1)
-print(int(Quality))
-
-#get file served number
-FilesServedStart = '</td>\n<td>'
-FilesServedEnd = '</td>\n<td style="text-align:left; padding-left:7px">'
-FilesServed = re.search(LastSeen + '%s(.*)%s' % (FilesServedStart, FilesServedEnd), src).group(1)
-print(int(FilesServed.replace(',', '')))
+print('Quality:\t')
+print(Quality)
 
 #get Hitrate
-HitrateStart = Quality + '</td>\n<td>'
-HitrateEnd = ' / day</td>\n<td>'
+HitrateStart = '</td>\n<td>'
+HitrateEnd = ' / min</td>\n<td>'
 Hitrate = re.search('%s(.*)%s' % (HitrateStart, HitrateEnd), src).group(1)
+print('Hitrate:\t')
 print(float(Hitrate))
+
 
 #get Hathrate
 HathrateStart = ' / min</td>\n<td>'
-HathrateEnd = ' / min</td>\n<td>'
+HathrateEnd = ' / day</td>\n<td>'
 Hathrate = re.search('%s(.*)%s' % (HathrateStart, HathrateEnd), src).group(1)
+print('Hathrate:\t')
 print(float(Hathrate))
+
+
+
+
+
+
 
 
 
